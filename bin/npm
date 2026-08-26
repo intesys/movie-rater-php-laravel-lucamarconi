@@ -1,0 +1,9 @@
+#!/bin/bash
+[ -z "$1" ] && echo "Please specify an npm command (e.g. install, run dev, run build)" && exit 1
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+source "$SCRIPTPATH/.env"
+[ -z "$ENV" ] && echo "Must provide ENV var in bin/.env" && exit 1
+[ "$ENV" != "dev" ] && echo "Only available in dev environment" && exit 1
+docker compose \
+    -f "$SCRIPTPATH/../docker-compose.dev-node.yml" \
+    run --rm --user node --workdir /var/www/html node npm "$@"

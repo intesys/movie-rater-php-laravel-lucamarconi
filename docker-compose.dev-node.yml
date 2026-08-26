@@ -1,0 +1,13 @@
+services:
+
+    node:
+        container_name: '${PROJECT_NAME}-node'
+        build:
+            context: './.dockers/development/node/'
+        environment:
+            TZ: '${TZ}'
+        working_dir: /var/www/html
+        volumes:
+            - './:/var/www/html'
+        ports:
+            - '${VITE_PORT:-5173}:5173'

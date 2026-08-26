@@ -1,0 +1,9 @@
+#!/bin/bash
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+source "$SCRIPTPATH/.env"
+[ -z "$ENV" ] && echo "Must provide ENV var in bin/.env" && exit 1
+[ -z "$1" ] && echo "Please specify a CLI command (e.g. ls)" && exit 1
+docker compose \
+    -f "$SCRIPTPATH/../docker-compose.yml" \
+    -f "$SCRIPTPATH/../docker-compose.$ENV.yml" \
+    exec -u web app "$@"

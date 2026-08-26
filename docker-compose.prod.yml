@@ -1,0 +1,64 @@
+services:
+
+    app:
+        image: '${DOCKER_IMAGE}:${APP_ENV}'
+        build:
+            context: '.'
+            dockerfile: './.dockers/production/php/Dockerfile'
+            args:
+                uid: '${DOCKER_USER_ID}'
+                gid: '${DOCKER_GROUP_ID}'
+                TZ: '${TZ}'
+        restart: unless-stopped
+        volumes:
+            - '${SHARED_FOLDER}/storage:/var/www/html/storage'
+
+    webserver:
+        image: '${DOCKER_IMAGE}-web:${APP_ENV}'
+        build:
+            context: './.dockers/production/apache/'
+            args:
+                uid: '${DOCKER_USER_ID}'
+                gid: '${DOCKER_GROUP_ID}'
+                TZ: '${TZ}'
+        restart: unless-stopped
+        volumes:
+            - '${SHARED_FOLDER}/storage:/var/www/html/storage:ro'
+        volumes_from:
+            - app
+
+    queue:
+        container_name: '${PROJECT_NAME}-queue'
+        image: '${DOCKER_IMAGE}-queue:${APP_ENV}'
+        build:
+            context: '.'
+            dockerfile: './.dockers/production/queue/Dockerfile'
+            args:
+                APP_IMAGE: '${DOCKER_IMAGE}:${APP_ENV}'
+        restart: unless-stopped
+        depends_on:
+            - app
+        environment:
+            TZ: '${TZ}'
+        volumes:
+            - '${SHARED_FOLDER}/storage:/var/www/html/storage'
+        networks:
+            - 'app-network'
+
+    scheduler:
+        container_name: '${PROJECT_NAME}-scheduler'
+        image: '${DOCKER_IMAGE}-scheduler:${APP_ENV}'
+        build:
+            context: '.'
+            dockerfile: './.dockers/production/scheduler/Dockerfile'
+            args:
+                APP_IMAGE: '${DOCKER_IMAGE}:${APP_ENV}'
+        restart: unless-stopped
+        depends_on:
+            - app
+        environment:
+            TZ: '${TZ}'
+        volumes:
+            - '${SHARED_FOLDER}/storage:/var/www/html/storage'
+        networks:
+            - 'app-network'

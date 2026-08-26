@@ -1,0 +1,72 @@
+services:
+
+    app:
+        build:
+            context: './.dockers/development/php/'
+            args:
+                TZ: '${TZ}'
+                uid: '${DOCKER_USER_ID:-1000}'
+                gid: '${DOCKER_GROUP_ID:-1000}'
+        volumes:
+            - './:/var/www/html'
+            - './.dockers/development/php/php.ini:/usr/local/etc/php/conf.d/zz-app.ini:ro'
+        depends_on:
+            - db
+            - adminer
+            - mailpit
+
+    webserver:
+        build:
+            context: './.dockers/development/apache/'
+            args:
+                TZ: '${TZ}'
+                uid: '${DOCKER_USER_ID:-1000}'
+                gid: '${DOCKER_GROUP_ID:-1000}'
+        volumes:
+            - './:/var/www/html'
+
+    db:
+        container_name: '${PROJECT_NAME}-db'
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            TZ: '${TZ}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
+            POSTGRES_DB: '${DB_DATABASE}'
+        volumes:
+            - 'dbdata:/var/lib/postgresql/data'
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}']
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - 'app-network'
+
+    adminer:
+        container_name: '${PROJECT_NAME}-adminer'
+        image: adminer:latest
+        restart: unless-stopped
+        ports:
+            - '${ADMINER_PORT}:8080'
+        environment:
+            TZ: '${TZ}'
+            ADMINER_DEFAULT_SERVER: db
+        networks:
+            - 'app-network'
+
+    mailpit:
+        container_name: '${PROJECT_NAME}-mailpit'
+        image: axllent/mailpit:latest
+        restart: unless-stopped
+        ports:
+            - '${MAILPIT_UI_PORT:-8025}:8025'
+        environment:
+            TZ: '${TZ}'
+            MP_MAX_MESSAGES: 5000
+        networks:
+            - 'app-network'
+
+volumes:
+    dbdata:

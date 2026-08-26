@@ -1,0 +1,33 @@
+.git
+.github
+.gitlab-ci.yml
+.editorconfig
+.dockerignore
+.idea
+.vscode
+
+# Environment files (build args / secrets are injected externally)
+.env
+.env.*
+!.env.example
+
+# Local dev artifacts
+/node_modules
+/public/hot
+/public/build
+/public/storage
+/storage/*.key
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/vendor
+/var
+/bin
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.phpunit.result.cache
+.phpunit.cache
