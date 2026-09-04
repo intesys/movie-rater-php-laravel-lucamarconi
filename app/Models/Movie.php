@@ -45,4 +45,23 @@ class Movie extends Model
 
         return $query->where('release_year', '<', $target);
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        // Ricerca testuale su titolo o regista (chiave 'search')
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'ilike', '%' . $search . '%') # usiamo ilike in modo da rendere la ricerca case insesitive
+                    ->orWhere('director', 'ilike', '%' . $search . '%');
+            });
+        });
+
+         $query->when($filters['genre'] ?? false, function ($query, $genre) {
+            $query->where('genre', $genre);
+        });
+
+        $query->when($filters['year'] ?? false, function ($query, $year) {
+            $query->where('release_year', $year);
+        });
+    }
 }

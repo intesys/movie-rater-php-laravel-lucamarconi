@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +19,17 @@ return new class extends Migration
             $table->string('genre', 30);
             $table->text('plot');
             $table->timestamps();
+
+            // Unique che impedisce di inserire lo stesso film due volte, ma ci consente di inserire un remake
+            // Funge anche da indice su titolo
+            $table->unique(['title', 'release_year']);
+
+            // Indici per filtri
+            $table->index('director');
+            $table->index('release_year');
+            $table->index('genre');
         });
+
     }
 
     /**
