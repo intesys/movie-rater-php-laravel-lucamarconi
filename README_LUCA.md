@@ -29,3 +29,8 @@
     # numero di anni parametrizzato
     php artisan movies:delete --years=10
    ```
+   
+## Versione Filament
+* Url: http://localhost/admin 
+* Email: admin@admin.it
+* Password: admin
