@@ -15,11 +15,11 @@
 
 ---
 
-1. **Comando per eseguire migration e seeder**
+1. **Comando per eseguire migration e seeder (necessario)**
    ```bash
     php artisan migrate --seed
     ```
-2. **Comando per eseguire l'eliminazione dei film**
+2. **Comando per eseguire l'eliminazione dei film (opzionale)**
    ```bash
     # in DeleteOldMovies.php è documentato l'utilizzo del command via scheduler di Laravel
     
@@ -29,8 +29,10 @@
     # numero di anni parametrizzato
     php artisan movies:delete --years=10
    ```
-   
+---
+
 ## Versione Filament
-* Url: http://localhost/admin 
-* Email: admin@admin.it
-* Password: admin
+* Per l'accesso (assicurarsi di aver eseguito il comando migrate --seed prima):
+   * Url: http://localhost/admin 
+   * Email: admin@admin.it
+   * Password: admin
